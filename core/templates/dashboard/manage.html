@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}Jenga Connect - Manage Portal{% endblock %}
+
+{% block content %}
+<div class="container animate-fade-in" style="padding: 2rem 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: var(--text-main);">
+                {% if profile.role == 'admin' %}Admin Portal{% else %}Product Management{% endif %}
+            </h1>
+            <p style="color: var(--text-muted); font-size: 1rem;">Manage hardwares and products</p>
+        </div>
+        <div>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 2rem;">
+
+        <!-- Left Column: Forms -->
+        <div style="flex: 1; min-width: 350px;">
+
+            {% if profile.role == 'admin' %}
+            <div
+                style="background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); padding: 2rem; margin-bottom: 2rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--primary);">Add New
+                    Hardware Store</h2>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add_hardware">
+
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Store
+                            Name</label>
+                        <input type="text" name="store_name" required placeholder="e.g. Kijitonyama Hardware"
+                            style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Owner
+                            Full Name</label>
+                        <input type="text" name="full_name" required placeholder="e.g. Juma Kassim"
+                            style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="flex: 1;">
+                            <label
+                                style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Phone</label>
+                            <input type="text" name="phone" required placeholder="07XX XXX XXX"
+                                style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                        </div>
+                        <div style="flex: 1;">
+                            <label
+                                style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Password</label>
+                            <input type="password" name="password" required placeholder="Temporary password"
+                                style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Area</label>
+                        <input type="text" name="area" required placeholder="e.g. Makumbusho"
+                            style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary"
+                        style="width: 100%; padding: 0.6rem; font-size: 0.95rem;">Register
+                        Hardware Store</button>
+                </form>
+            </div>
+            {% endif %}
+
+            <div
+                style="background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); padding: 2rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--primary);">Add New
+                    Product</h2>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add_product">
+
+                    {% if profile.role == 'admin' %}
+                    <div style="margin-bottom: 1rem;">
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Hardware
+                            Store</label>
+                        <select name="store_id" required
+                            style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                            <option value="">Select a Store...</option>
+                            {% for store in stores %}
+                            <option value="{{ store.id }}">{{ store.name }} ({{ store.area }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+
+                    <div style="margin-bottom: 1rem;">
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Product
+                            Category</label>
+                        <select name="category" id="category_select" required
+                            style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                            <option value="">Select Category...</option>
+                            <option value="cement">Cement</option>
+                            <option value="building_blocks">Building Blocks</option>
+                            <option value="iron_rods">Iron Rods</option>
+                            <option value="plaster">Plaster</option>
+                            <option value="paint_colour">Paint / Colour</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Product
+                            Name</label>
+                        <input type="text" name="name" required placeholder="e.g. Simba Cement 42.5R"
+                            style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Product
+                            Image
+                            (Optional)</label>
+                        <input type="file" name="image" accept="image/*"
+                            style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="flex: 1;">
+                            <label
+                                style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Price
+                                (TZS)</label>
+                            <input type="number" name="price" required placeholder="Base Price"
+                                style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                        </div>
+                        <div style="flex: 1;">
+                            <label
+                                style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Unit</label>
+                            <select name="unit" id="unit_select" required
+                                style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                                <option value="bag">Bag</option>
+                                <option value="piece">Piece</option>
+                                <option value="bar">Bar</option>
+                                <option value="bucket">Bucket</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary"
+                        style="width: 100%; padding: 0.6rem; font-size: 0.95rem; background: #28a745; border-color: #28a745;">Add
+                        Product</button>
+                </form>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Lists -->
+        <div style="flex: 1.5; min-width: 350px; display: flex; flex-direction: column; gap: 2rem;">
+
+            {% if profile.role == 'admin' %}
+            <div
+                style="background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); overflow: hidden;">
+                <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-color); background: #fdfdfd;">
+                    <h2 style="font-size: 1.25rem; font-weight: 700; margin: 0;">Hardware Stores Directory</h2>
+                </div>
+                <div style="padding: 0;">
+                    {% if stores %}
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        {% for store in stores %}
+                        <li
+                            style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                            {% with store_name=store.name owner_name=store.owner.full_name owner_phone=store.owner.phone store_area=store.area %}
+                            <div>
+                                <div style="font-weight: 600; font-size: 1rem;">{{ store_name }}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">Owner: {{ owner_name }} • Phone: {{ owner_phone }}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span
+                                    style="display: inline-block; padding: 0.2rem 0.6rem; border-radius: 99px; background: #e2e8f0; font-size: 0.8rem; font-weight: 600;">{{ store_area }}</span>
+                            </div>
+                            {% endwith %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div style="padding: 2rem; text-align: center; color: var(--text-muted);">No hardware stores
+                        registered yet.</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div
+                style="background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); overflow: hidden;">
+                <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-color); background: #fdfdfd;">
+                    <h2 style="font-size: 1.25rem; font-weight: 700; margin: 0;">Recent Products Added</h2>
+                </div>
+                <div style="padding: 0;">
+                    {% if products %}
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        {% for pt in products %}
+                        <li
+                            style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                {% if pt.image %}
+                                <img src="{{ pt.image.url }}" alt="{{ pt.name }}"
+                                    style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color);">
+                                {% else %}
+                                <div
+                                    style="width: 40px; height: 40px; border-radius: 4px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.7rem;">
+                                    No Img</div>
+                                {% endif %}
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.95rem;">{{ pt.name }}</div>
+                                    <div
+                                        style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">
+                                        {{ pt.store.name }} • {{ pt.get_category_display }}</div>
+                                </div>
+                            </div>
+                            {% with price=pt.hardware_price_per_unit|floatformat:0 unit_display=pt.get_unit_display %}
+                            <div style="text-align: right;">
+                                <div style="font-weight: 700; color: var(--text-main); font-size: 0.95rem;">TZS {{ price }}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">/{{ unit_display }}
+                                </div>
+                            </div>
+                            {% endwith %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div style="padding: 2rem; text-align: center; color: var(--text-muted);">No products registered
+                        yet.</div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    const categorySelect = document.getElementById('category_select');
+    const unitSelect = document.getElementById('unit_select');
+
+    categorySelect.addEventListener('change', function () {
+        if (this.value === 'cement' || this.value === 'plaster') {
+            unitSelect.value = 'bag';
+        } else if (this.value === 'building_blocks') {
+            unitSelect.value = 'piece';
+        } else if (this.value === 'iron_rods') {
+            unitSelect.value = 'bar';
+        } else if (this.value === 'paint_colour') {
+            unitSelect.value = 'bucket';
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

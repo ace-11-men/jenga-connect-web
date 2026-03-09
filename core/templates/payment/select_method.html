@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Select Payment Method - Jenga Connect{% endblock %}
+
+{% block content %}
+<div class="container animate-fade-in" style="max-width: 500px; padding: 2rem 0;">
+    <div
+        style="background: white; border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-md); border: 1px solid var(--border-color);">
+        <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem;">Pay for Order</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Order ID: #{{ order.short_id }}</p>
+
+        <div
+            style="background: var(--bg-color); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 2rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span>Total Amount:</span>
+                <span style="font-weight: 800; color: var(--primary); font-size: 1.2rem;">TZS {{ order.grand_total|floatformat:0 }}</span>
+            </div>
+        </div>
+
+        <form action="{% url 'initiate_payment' order.id %}" method="POST">
+            {% csrf_token %}
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-weight: 600; margin-bottom: 1rem;">Choose Mobile Money
+                    Provider:</label>
+
+                <label
+                    style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; margin-bottom: 1rem;">
+                    <input type="radio" name="method" value="mpesa" checked>
+                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/8/87/M-Pesa_logo.png/120px-M-Pesa_logo.png"
+                        alt="M-Pesa" style="height: 24px;">
+                    <span style="font-weight: 600;">Vodacom M-Pesa</span>
+                </label>
+
+                <label
+                    style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; margin-bottom: 1rem;">
+                    <input type="radio" name="method" value="tigopesa">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Tigo_logo.svg/100px-Tigo_logo.svg.png"
+                        alt="Tigo Pesa" style="height: 24px;">
+                    <span style="font-weight: 600;">Tigo Pesa</span>
+                </label>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Phone Number (M-Pesa/Tigo
+                    Pesa):</label>
+                <input type="text" name="phone" placeholder="255XXXXXXXXX" value="{{ user.profile.phone }}" required
+                    style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                <small style="color: var(--text-muted);">Enter number in 255 format</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+                Pay Now
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

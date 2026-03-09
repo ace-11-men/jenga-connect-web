@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Jenga Connect - Home{% endblock %}
+
+{% block content %}
+<div class="container animate-fade-in">
+    <!-- Categories Banner / Ticker -->
+    <div
+        style="background: white; border-bottom: 1px solid var(--border-color); padding: 10px 0; margin-bottom: 2rem; position: relative;">
+        <div
+            style="display: flex; gap: 2rem; overflow-x: auto; white-space: nowrap; font-weight: 500; font-size: 0.9rem;">
+            <a href="#"
+                style="color: var(--primary); text-decoration: none; padding-bottom: 5px; border-bottom: 2px solid var(--primary);">All</a>
+            <a href="?category=cement" style="color: var(--text-main); text-decoration: none;">Cement</a>
+            <a href="?category=building_blocks" style="color: var(--text-main); text-decoration: none;">Blocks</a>
+            <a href="?category=iron_rods" style="color: var(--text-main); text-decoration: none;">Iron Rods</a>
+            <a href="?category=plaster" style="color: var(--text-main); text-decoration: none;">Plaster</a>
+            <a href="?category=paint_colour" style="color: var(--text-main); text-decoration: none;">Paint & Colour</a>
+        </div>
+    </div>
+
+    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; font-weight: 800; color: var(--text-main);">Nearby Hardware
+        Stores</h2>
+    <div
+        style="display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; margin-bottom: 2rem; scroll-snap-type: x mandatory;">
+        <!-- Tracking Near Hardwares feature -->
+        {% for store in hardware_stores %}
+        <div
+            style="min-width: 250px; background: white; padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); scroll-snap-align: start;">
+            <div style="display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem;">
+                <div
+                    style="width: 48px; height: 48px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                    <i data-lucide="map-pin"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-main);">{{ store.name }}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">{{ store.area }}</div>
+                </div>
+            </div>
+            <div style="font-size: 0.85rem; color: #28a745; font-weight: 600;">
+                ★ Faster deliveries: ~{{ store.delivery_capacity_units_per_day }} units/day
+            </div>
+        </div>
+        {% empty %}
+        <div style="color: var(--text-muted); font-size: 0.9rem;">No hardware stores found nearby.</div>
+        {% endfor %}
+    </div>
+
+    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; font-weight: 800;">Top Picks for You</h2>
+
+    <div class="product-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <img src="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/200?text={{ product.get_category_display }}{% endif %}"
+                alt="{{ product.name }}" class="product-image">
+            <div class="product-info">
+                <!-- Using TZS for pricing per specs -->
+                <div class="product-price">TZS {{ product.hardware_price_per_unit|floatformat:0 }}</div>
+                <div class="product-title">{{ product.name }}</div>
+                <div class="product-store">
+                    <i data-lucide="store" style="width: 14px; height: 14px;"></i>
+                    {{ product.store.name }} • {{ product.store.area }}
+                </div>
+                <div style="font-size: 0.8rem; color: #28A745; margin-bottom: 1rem;">
+                    ★ Deliver in {{ product.delivery_eta_hours }}hrs
+                </div>
+                <a href="{% url 'product_detail' product.id %}" class="btn btn-primary"
+                    style="width: 100%; text-decoration: none; text-align: center;">
+                    View & Order {{ product.get_unit_display }}
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 4rem;">
+            <h3>No products found</h3>
+            <p>Wait for hardware stores to upload their products.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

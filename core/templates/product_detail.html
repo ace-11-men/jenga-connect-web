@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Jenga Connect - {{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container animate-fade-in" style="padding: 2rem 0;">
+    <div style="display: flex; flex-wrap: wrap; gap: 2rem;">
+        <!-- Product Image -->
+        <div
+            style="flex: 1; min-width: 300px; background: white; border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+            <img src="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/400?text={{ product.category }}{% endif %}"
+                alt="{{ product.name }}" style="width: 100%; height: auto; object-fit: contain; max-height: 400px;">
+        </div>
+
+        <!-- Product Details -->
+        <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column;">
+            <div
+                style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 600;">
+                {{ product.get_category_display }}</div>
+            <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem; color: var(--text-main);">{{ product.name }}</h1>
+
+            <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary); margin-bottom: 1.5rem;">
+                TZS {{ product.hardware_price_per_unit|floatformat:0 }} <span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">/ {{ product.get_unit_display }}</span>
+            </div>
+
+            <div
+                style="background: white; border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 2rem; border: 1px solid var(--border-color);">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <i data-lucide="store" style="color: var(--text-muted);"></i>
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-main);">{{ product.store.name }}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">{{ product.store.area }}</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <i data-lucide="truck" style="color: #28a745;"></i>
+                    <div style="font-size: 0.9rem; font-weight: 500; color: #28a745;">
+                        Delivers in {{ product.delivery_eta_hours }} hours
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Form -->
+            <div
+                style="background: var(--card-bg); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid var(--primary);">
+                {% if user.is_authenticated and user.profile.role == 'fundi' %}
+                <h3 style="margin-bottom: 1rem; font-size: 1.2rem;">Place Order</h3>
+
+                <form action="{% url 'checkout' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Quantity ({{ product.get_unit_display }})</label>
+                        <input type="number" name="quantity" min="1" value="1" required
+                            style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Delivery Area</label>
+                        <input type="text" name="delivery_area" placeholder="e.g. Arusha CBD"
+                            value="{{ user.profile.area }}" required
+                            style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Delivery Note</label>
+                        <input type="text" name="address_note" placeholder="Near the clock tower..."
+                            style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary"
+                        style="width: 100%; font-size: 1.1rem; padding: 1rem;">
+                        Confirm Order
+                    </button>
+                </form>
+                {% elif user.is_authenticated and user.profile.role == 'hardware' %}
+                <div style="text-align: center; color: var(--text-muted);">
+                    As a hardware store, you cannot place orders. Switch to a Fundi account.
+                </div>
+                {% else %}
+                <div style="text-align: center;">
+                    <p style="margin-bottom: 1rem;">You must be logged in as a Fundi to order.</p>
+                    <a href="{% url 'login' %}" class="btn btn-primary" style="width: 100%;">Log In to Order</a>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

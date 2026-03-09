@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='8' y='28' width='40' height='12' fill='%23FF5C00' rx='1.5'/%3E%3Crect x='8' y='44' width='28' height='12' fill='%23FF5C00' rx='1.5'/%3E%3Cpath d='M35 15 L75 22 L75 70 C75 80 50 90 50 90 C50 90 25 80 25 70 Z' fill='%232E3743'/%3E%3C/svg%3E">
+    <title>{% block title %}Jenga Connect - Builders Marketplace{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- Static CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <header>
+        <div class="container header-content animate-slide-down">
+            <a href="{% url 'home' %}" class="logo" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+                <svg width="42" height="42" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Brand Dark Slate Outline/Shield -->
+                    <path d="M 35 15 L 75 22 L 75 70 C 75 80 50 90 50 90 C 50 90 25 80 25 70 Z" fill="#2E3743" />
+                    <!-- Light grey top building accent -->
+                    <path d="M 45 16 L 65 19 L 65 35 L 45 35 Z" fill="#CBD5E1" />
+                    <!-- Orange bricks -->
+                    <rect x="8" y="28" width="40" height="12" fill="#FF5C00" rx="1.5" />
+                    <rect x="8" y="44" width="28" height="12" fill="#FF5C00" rx="1.5" />
+                    <!-- White JC / Interlock loop -->
+                    <path
+                        d="M 40 45 L 40 50 A 5 5 0 0 0 45 55 A 5 5 0 0 1 50 60 A 10 10 0 0 0 60 70 L 65 70 A 10 10 0 0 0 75 60 L 75 40 A 10 10 0 0 0 65 30 L 45 30"
+                        stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" fill="none" />
+                    <!-- Additional inner curve -->
+                    <path d="M 35 65 A 10 10 0 0 0 50 75 L 55 75 A 10 10 0 0 0 65 65 L 65 50" stroke="#FFFFFF"
+                        stroke-width="7" stroke-linecap="round" fill="none" />
+                </svg>
+                <div style="display: flex; flex-direction: column; justify-content: center; line-height: 1;">
+                    <span
+                        style="color: #FF5C00; font-weight: 900; font-size: 1.5rem; letter-spacing: -0.5px;">Jenga</span>
+                    <span
+                        style="color: #2E3743; font-weight: 800; font-size: 0.75rem; letter-spacing: 1px;">CONNECT</span>
+                </div>
+            </a>
+
+            <div class="search-bar">
+                <input type="text" placeholder="Search for cement, iron rods, plaster...">
+                <button type="button">Search</button>
+            </div>
+
+            <div class="user-actions">
+                {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn btn-outline">Dashboard</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    {% if messages %}
+    <div class="container" style="padding-top: 1rem;">
+        {% for message in messages %}
+        <div style="margin-bottom: 0.75rem; padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: #fff;">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'home' %}" class="bottom-nav-item {% if request.path == '/' %}active{% endif %}">
+            <i data-lucide="home"></i>
+            <span>Home</span>
+        </a>
+        <a href="{% url 'home' %}" class="bottom-nav-item">
+            <i data-lucide="search"></i>
+            <span>Explore</span>
+        </a>
+        <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}"
+            class="bottom-nav-item {% if '/dashboard' in request.path %}active{% endif %}">
+            <i data-lucide="shopping-bag"></i>
+            <span>Orders</span>
+        </a>
+        <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}"
+            class="bottom-nav-item {% if '/dashboard' in request.path %}active{% endif %}">
+            <i data-lucide="user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

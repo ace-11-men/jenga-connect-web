@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Processing Payment - Jenga Connect{% endblock %}
+
+{% block content %}
+<div class="container animate-fade-in" style="max-width: 500px; padding: 4rem 0; text-align: center;">
+    <div
+        style="background: white; border-radius: var(--radius-lg); padding: 3rem; box-shadow: var(--shadow-md); border: 1px solid var(--border-color);">
+        <div class="loader-container" style="margin-bottom: 2rem;">
+            <!-- Simple CSS Spinner -->
+            <div
+                style="width: 60px; height: 60px; border: 5px solid #f3f3f3; border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;">
+            </div>
+        </div>
+
+        <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem;">STK Push Sent</h2>
+        <p style="color: var(--text-main); font-weight: 500; margin-bottom: 0.5rem;">Please check your phone ({{ payment.phone_number }})</p>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Enter your M-Pesa/Tigo Pesa PIN to
+            authorize the payment of <strong>TZS {{ order.grand_total|floatformat:0 }}</strong>.</p>
+
+        <div id="status-msg" style="color: var(--primary); font-weight: 700;">Waiting for payment confirmation...</div>
+    </div>
+</div>
+
+<style>
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const paymentId = "{{ payment.id }}";
+    const statusMsg = document.getElementById('status-msg');
+
+    async function checkStatus() {
+        try {
+            const response = await fetch(`/payment/status/${paymentId}/`);
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                statusMsg.innerText = "Payment Successful! Redirecting...";
+                statusMsg.style.color = "#28a745";
+                setTimeout(() => {
+                    window.location.href = "{% url 'dashboard' %}";
+                }, 2000);
+            } else if (data.status === 'failed') {
+                statusMsg.innerText = "Payment Failed. Please try again.";
+                statusMsg.style.color = "red";
+            } else {
+                // Check again in 3 seconds
+                setTimeout(checkStatus, 3000);
+            }
+        } catch (error) {
+            console.error("Error checking status:", error);
+            setTimeout(checkStatus, 5000);
+        }
+    }
+
+    // Start checking
+    setTimeout(checkStatus, 2000);
+</script>
+{% endblock %}

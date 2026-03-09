@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Jenga Connect - Login{% endblock %}
+
+{% block content %}
+<div class="container animate-fade-in" style="display: flex; justify-content: center; padding: 4rem 0;">
+    <div
+        style="background: var(--card-bg); padding: 2.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); width: 100%; max-width: 400px; border: 1px solid var(--border-color);">
+        <h2 style="text-align: center; margin-bottom: 2rem; color: var(--primary); font-weight: 800;">Log In</h2>
+
+        {% if error %}
+        <div
+            style="background: #ffebee; color: #c62828; padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem; text-align: center; font-size: 0.9rem;">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Phone
+                    Number</label>
+                <input type="text" name="phone" required placeholder="07XXXXXXXX"
+                    style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <label
+                    style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Password</label>
+                <input type="password" name="password" required placeholder="••••••••"
+                    style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 1.1rem;">Log
+                In</button>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+            Don't have an account? <a href="{% url 'register' %}"
+                style="color: var(--primary); font-weight: 600; text-decoration: none;">Register</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

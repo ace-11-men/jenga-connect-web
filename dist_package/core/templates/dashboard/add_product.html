@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Jenga Connect - Add Product{% endblock %}
+
+{% block content %}
+<div class="container animate-fade-in" style="display: flex; justify-content: center; padding: 4rem 0;">
+    <div
+        style="background: var(--card-bg); padding: 2.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); width: 100%; max-width: 500px; border: 1px solid var(--border-color);">
+        <h2 style="text-align: center; margin-bottom: 2rem; color: var(--primary); font-weight: 800;">Add New Product
+        </h2>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Product
+                    Category</label>
+                <select name="category" id="category_select" required
+                    style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                    <option value="">Select Category...</option>
+                    <option value="cement">Cement</option>
+                    <option value="building_blocks">Building Blocks</option>
+                    <option value="iron_rods">Iron Rods</option>
+                    <option value="plaster">Plaster</option>
+                    <option value="paint_colour">Paint / Colour</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Product
+                    Name</label>
+                <input type="text" name="name" required placeholder="e.g. Simba Cement 42.5R"
+                    style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Product
+                    Image (Optional)</label>
+                <input type="file" name="image" accept="image/*"
+                    style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                <div style="flex: 1;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Base
+                        Price (TZS)</label>
+                    <input type="number" name="price" required placeholder="15000"
+                        style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                </div>
+                <div style="flex: 1;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Unit
+                        Type</label>
+                    <select name="unit" id="unit_select" required
+                        style="width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none;">
+                        <option value="bag">Bag</option>
+                        <option value="piece">Piece</option>
+                        <option value="bar">Bar</option>
+                        <option value="bucket">Bucket</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 1; padding: 0.6rem; font-size: 0.95rem;">Save
+                    Product</button>
+                <a href="{% url 'dashboard' %}" class="btn btn-outline"
+                    style="flex: 1; padding: 0.6rem; font-size: 0.95rem; text-align: center;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    const categorySelect = document.getElementById('category_select');
+    const unitSelect = document.getElementById('unit_select');
+
+    categorySelect.addEventListener('change', function () {
+        if (this.value === 'cement' || this.value === 'plaster') {
+            unitSelect.value = 'bag';
+        } else if (this.value === 'building_blocks') {
+            unitSelect.value = 'piece';
+        } else if (this.value === 'iron_rods') {
+            unitSelect.value = 'bar';
+        } else if (this.value === 'paint_colour') {
+            unitSelect.value = 'bucket';
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,34 @@
+WARNING 2026-03-07 23:38:07,951 log 149129 130249916413632 Not Found: /favicon.ico
+WARNING 2026-03-07 23:38:07,952 log 149129 130249916413632 "GET /favicon.ico HTTP/1.1" 404 5942
+WARNING 2026-03-07 23:38:53,366 views 149129 130249916413632 Failed login attempt for phone: 0783414177
+WARNING 2026-03-07 23:56:40,363 log 149129 130249906972352 Not Found: /favicon.ico
+WARNING 2026-03-07 23:56:40,365 log 149129 130249906972352 "GET /favicon.ico HTTP/1.1" 404 5942
+WARNING 2026-03-08 00:04:21,222 base 149129 130249379542720 Session data corrupted
+WARNING 2026-03-08 00:04:21,329 log 149129 130249379542720 Not Found: /accounts/login/
+WARNING 2026-03-08 00:04:21,332 log 149129 130249379542720 "GET /accounts/login/?next=/dashboard/ HTTP/1.1" 404 5971
+WARNING 2026-03-08 00:04:27,958 base 149129 130249379542720 Session data corrupted
+WARNING 2026-03-08 00:04:28,039 log 149129 130249379542720 Not Found: /accounts/login/
+WARNING 2026-03-08 00:04:28,041 log 149129 130249379542720 "GET /accounts/login/?next=/payment/initiate/6/ HTTP/1.1" 404 5980
+WARNING 2026-03-08 00:04:33,498 base 149129 130249379542720 Session data corrupted
+WARNING 2026-03-08 00:05:11,936 base 149129 130249379542720 Session data corrupted
+WARNING 2026-03-08 00:05:15,105 base 149129 130249379542720 Session data corrupted
+WARNING 2026-03-08 00:12:28,292 base 149129 130249329186496 Session data corrupted
+WARNING 2026-03-08 00:25:55,697 base 149129 130249329186496 Session data corrupted
+WARNING 2026-03-08 00:26:06,632 base 149129 130249329186496 Session data corrupted
+WARNING 2026-03-08 00:26:27,682 base 149129 130249329186496 Session data corrupted
+WARNING 2026-03-08 00:38:00,819 log 178496 136062965008064 Not Found: /favicon.ico
+WARNING 2026-03-08 00:38:00,825 log 178496 136062965008064 "GET /favicon.ico HTTP/1.1" 404 5942
+WARNING 2026-03-08 00:40:02,743 views 178496 136063009068736 Failed login attempt for phone: 0765235099
+WARNING 2026-03-08 00:43:46,208 log 178496 136062965008064 Not Found: /accounts/login/
+WARNING 2026-03-08 00:43:46,209 log 178496 136062965008064 "GET /accounts/login/?next=/payment/initiate/7/ HTTP/1.1" 404 5980
+ERROR 2026-03-08 00:44:23,734 log 184363 124084334663552 Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/home/cto/Downloads/jenga connect/venv/lib/python3.14/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/cto/Downloads/jenga connect/venv/lib/python3.14/site-packages/django/utils/deprecation.py", line 308, in __call__
+    response = self.process_request(request)
+  File "/home/cto/Downloads/jenga connect/venv/lib/python3.14/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+  File "/home/cto/Downloads/jenga connect/venv/lib/python3.14/site-packages/django/http/request.py", line 205, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
