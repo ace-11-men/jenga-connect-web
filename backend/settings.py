@@ -143,6 +143,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -240,6 +241,11 @@ LOGGING = {
 }
 
 # Custom User Model (we will define this in core if needed, or stick to normal profile. Let's stick to profile for now, check blueprint if custom user is needed)
+
+# Login URLs
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/dashboard/"
+LOGOUT_REDIRECT_URL = "/"
 
 # Cache Configuration (Redis for production, local memory for dev)
 CACHES = {
