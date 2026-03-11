@@ -32,3 +32,5 @@ Traceback (most recent call last):
   File "/home/cto/Downloads/jenga connect/venv/lib/python3.14/site-packages/django/http/request.py", line 205, in get_host
     raise DisallowedHost(msg)
 django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+WARNING 2026-03-11 01:30:21,807 log 431214 132741316204224 Not Found: /favicon.ico
+WARNING 2026-03-11 01:30:21,808 log 431214 132741316204224 "GET /favicon.ico HTTP/1.1" 404 5942

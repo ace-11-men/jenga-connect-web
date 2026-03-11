@@ -240,3 +240,38 @@ LOGGING = {
 }
 
 # Custom User Model (we will define this in core if needed, or stick to normal profile. Let's stick to profile for now, check blueprint if custom user is needed)
+
+# Cache Configuration (Redis for production, local memory for dev)
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django.core.cache.backends.redis.RedisClient",
+        },
+        "KEY_PREFIX": "jenga_connect",
+        "TIMEOUT": 300,
+    }
+}
+
+# Use local memory cache if Redis is not available (development fallback)
+if os.getenv("USE_LOCAL_CACHE", "false").lower() == "true":
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "unique-snowflake",
+        }
+    }
+
+# Caching for DRF
+REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
+    "rest_framework.renderers.JSONRenderer",
+]
+REST_FRAMEWORK["DEFAULT_PARSER_CLASSES"] = [
+    "rest_framework.parsers.JSONParser",
+]
+
+# Cache timeout defaults
+CACHE_TTL_SHORT = 60 * 5  # 5 minutes
+CACHE_TTL_MEDIUM = 60 * 30  # 30 minutes
+CACHE_TTL_LONG = 60 * 60 * 24  # 24 hours
