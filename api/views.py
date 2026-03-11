@@ -77,6 +77,23 @@ class ProductViewSet(viewsets.ModelViewSet):
             qs = qs.filter(category=category)
         return qs
 
+    def perform_create(self, serializer):
+        profile = self.request.user.profile
+        if profile.role == "hardware":
+            store = HardwareStore.objects.filter(owner=profile).first()
+            if store:
+                serializer.save(store=store)
+            else:
+                serializer.save()
+        else:
+            serializer.save()
+
+    def perform_destroy(self, instance):
+        profile = self.request.user.profile
+        if profile.role == "hardware" and instance.store.owner != profile:
+            return
+        instance.delete()
+
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
