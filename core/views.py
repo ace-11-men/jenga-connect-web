@@ -589,6 +589,35 @@ def manage_page(request):
                 active=True,
             )
             return redirect("manage_page")
+        elif action == "delete_product":
+            product_id = request.POST.get("product_id")
+
+            if not product_id:
+                messages.error(request, "Product ID is required.")
+                return redirect("manage_page")
+
+            if profile.role == "admin":
+                product = get_object_or_404(Product, pk=product_id)
+            else:
+                store = HardwareStore.objects.filter(owner=profile).first()
+                if not store:
+                    logger.error(f"User {request.user.username} has no hardware store")
+                    messages.error(request, "You have no hardware store.")
+                    return redirect("manage_page")
+                product = get_object_or_404(Product, pk=product_id, store=store)
+
+            try:
+                product_name = product.name
+                product.delete()
+                logger.info(
+                    f"Product {product_name} deleted by {request.user.username} via manage page"
+                )
+                messages.success(request, "Product deleted successfully!")
+            except Exception as e:
+                logger.error(f"Error deleting product {product_id}: {str(e)}")
+                messages.error(request, "An error occurred while deleting the product.")
+
+            return redirect("manage_page")
 
     context = {
         "profile": profile,
