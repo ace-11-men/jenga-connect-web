@@ -29,4 +29,5 @@ urlpatterns = [
     path(
         "payment/status/<uuid:payment_id>/", views.payment_status, name="payment_status"
     ),
+    path("map/", views.map_view, name="map_view"),
 ]

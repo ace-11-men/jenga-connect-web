@@ -556,7 +556,31 @@ def manage_page(request):
                         area=area,
                     )
 
-            HardwareStore.objects.create(owner=new_profile, name=store_name, area=area)
+            address = (request.POST.get("address") or "").strip()
+            lat_raw = request.POST.get("latitude")
+            lng_raw = request.POST.get("longitude")
+
+            lat = None
+            lng = None
+            if lat_raw:
+                try:
+                    lat = float(lat_raw)
+                except ValueError:
+                    pass
+            if lng_raw:
+                try:
+                    lng = float(lng_raw)
+                except ValueError:
+                    pass
+
+            HardwareStore.objects.create(
+                owner=new_profile,
+                name=store_name,
+                area=area,
+                address=address or None,
+                latitude=lat,
+                longitude=lng,
+            )
             return redirect("manage_page")
 
         elif action == "add_product":
@@ -625,3 +649,23 @@ def manage_page(request):
         "products": Product.objects.filter(store__in=stores).order_by("-created_at"),
     }
     return render(request, "dashboard/manage.html", context)
+
+
+def map_view(request):
+    stores = HardwareStore.objects.filter(
+        active=True, latitude__isnull=False, longitude__isnull=False
+    )
+    stores_data = []
+    for store in stores:
+        stores_data.append(
+            {
+                "id": str(store.id),
+                "name": store.name,
+                "area": store.area,
+                "address": store.address or "",
+                "lat": store.latitude,
+                "lng": store.longitude,
+                "delivery_capacity": store.delivery_capacity_units_per_day,
+            }
+        )
+    return render(request, "map.html", {"stores": stores_data})

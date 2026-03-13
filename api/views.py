@@ -17,13 +17,16 @@ from core.models import (
     CommissionSetting,
     Order,
     OrderItem,
+    Notification,
 )
 from .serializers import (
     ProfileSerializer,
     HardwareStoreSerializer,
     ProductSerializer,
     OrderSerializer,
+    NotificationSerializer,
 )
+import math
 
 
 @api_view(["GET"])
@@ -63,6 +66,41 @@ class HardwareStoreViewSet(viewsets.ModelViewSet):
     queryset = HardwareStore.objects.filter(active=True)
     serializer_class = HardwareStoreSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    @action(detail=False, methods=["get"])
+    def nearby(self, request):
+        lat = request.query_params.get("lat")
+        lng = request.query_params.get("lng")
+        radius = float(request.query_params.get("radius", 10))
+
+        if not lat or not lng:
+            return Response(
+                {"detail": "lat and lng are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            lat = float(lat)
+            lng = float(lng)
+        except ValueError:
+            return Response(
+                {"detail": "lat and lng must be valid numbers."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        stores = HardwareStore.objects.filter(
+            active=True, latitude__isnull=False, longitude__isnull=False
+        )
+        nearby_stores = []
+        for store in stores:
+            distance = haversine_distance(lat, lng, store.latitude, store.longitude)
+            if distance <= radius:
+                store_data = HardwareStoreSerializer(store).data
+                store_data["distance_km"] = round(distance, 2)
+                nearby_stores.append(store_data)
+
+        nearby_stores.sort(key=lambda x: x["distance_km"])
+        return Response(nearby_stores)
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -214,6 +252,52 @@ class OrderViewSet(viewsets.ModelViewSet):
                 update_fields=["subtotal_hardware", "commission_total", "grand_total"]
             )
 
+            Notification.objects.create(
+                user=store.owner,
+                type="ORDER_CREATED",
+                title="New Order Received",
+                message=f"You have a new order #{order.short_id} from {fundi.full_name}",
+                order=order,
+            )
+
         # refresh and serialize
         order.refresh_from_db()
         return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+
+
+def haversine_distance(lat1, lon1, lat2, lon2):
+    R = 6371
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(math.radians(lat1))
+        * math.cos(math.radians(lat2))
+        * math.sin(dlon / 2) ** 2
+    )
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return R * c
+
+
+class NotificationViewSet(viewsets.ModelViewSet):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user.profile)
+
+    @action(detail=False, methods=["post"])
+    def mark_read(self, request):
+        notification_ids = request.data.get("notification_ids", [])
+        Notification.objects.filter(
+            id__in=notification_ids, user=request.user.profile
+        ).update(is_read=True)
+        return Response({"status": "marked as read"})
+
+    @action(detail=False, methods=["get"])
+    def unread_count(self, request):
+        count = Notification.objects.filter(
+            user=request.user.profile, is_read=False
+        ).count()
+        return Response({"unread_count": count})
