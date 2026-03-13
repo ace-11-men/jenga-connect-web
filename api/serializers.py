@@ -56,6 +56,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "category",
             "name",
             "brand",
+            "description",
             "unit",
             "specs_json",
             "hardware_price_per_unit",

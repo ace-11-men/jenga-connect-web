@@ -96,6 +96,11 @@ class Product(models.Model):
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     name = models.CharField(max_length=255)
     brand = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Add details like dimensions, materials, color, etc.",
+    )
     unit = models.CharField(max_length=20, choices=UNIT_CHOICES)
     specs_json = models.JSONField(blank=True, null=True)
     hardware_price_per_unit = models.DecimalField(max_digits=12, decimal_places=2)

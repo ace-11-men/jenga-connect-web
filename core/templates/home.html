@@ -63,9 +63,14 @@
                     <i data-lucide="store" style="width: 14px; height: 14px;"></i>
                     {{ product.store.name }} • {{ product.store.area }}
                 </div>
-                <div style="font-size: 0.8rem; color: #28A745; margin-bottom: 1rem;">
+                <div style="font-size: 0.8rem; color: #28A745; margin-bottom: 0.5rem;">
                     ★ Deliver in {{ product.delivery_eta_hours }}hrs
                 </div>
+                {% if product.description %}
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">
+                    {{ product.description|truncatechars:80 }}
+                </div>
+                {% endif %}
                 <a href="{% url 'product_detail' product.id %}" class="btn btn-primary"
                     style="width: 100%; text-decoration: none; text-align: center;">
                     View & Order {{ product.get_unit_display }}

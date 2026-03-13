@@ -383,6 +383,7 @@ def add_product(request):
         price = _parse_positive_decimal(request.POST.get("price"))
         unit = request.POST.get("unit")
         image = request.FILES.get("image")
+        description = (request.POST.get("description") or "").strip() or None
 
         if not name:
             messages.error(request, "Product name is required.")
@@ -399,6 +400,7 @@ def add_product(request):
                 store=store,
                 category=category,
                 name=name,
+                description=description,
                 hardware_price_per_unit=price,
                 unit=unit,
                 image=image,
@@ -589,6 +591,7 @@ def manage_page(request):
             price = _parse_positive_decimal(request.POST.get("price"))
             unit = request.POST.get("unit")
             image = request.FILES.get("image")
+            description = (request.POST.get("description") or "").strip() or None
 
             if not name:
                 messages.error(request, "Product name is required.")
@@ -607,6 +610,7 @@ def manage_page(request):
                 store=store,
                 category=category,
                 name=name,
+                description=description,
                 hardware_price_per_unit=price,
                 unit=unit,
                 image=image,
